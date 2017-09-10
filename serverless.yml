@@ -26,18 +26,68 @@ provider:
         - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:eu-central-1:*:*"
 
-functions:
-  # Defines an HTTP API endpoint that calls the main function in create.js
-  # - path: url path is /notes
-  # - method: POST request
-  # - cors: enabled CORS (Cross-Origin Resource Sharing) for browser cross
-  #     domain api call
-  # - authorizer: authenticate using the AWS IAM role
-  create:
-    handler: create.main
+functions:          
+  artists-create:
+    handler: api/artists/create.main
     events:
       - http:
-          path: notes
+          path: artists
           method: post
+          cors: true
+          authorizer: aws_iam
+  artists-createRandom:
+    handler: api/artists/create.random
+    events:
+      - http:
+          path: artists
+          method: post
+          cors: true
+          authorizer: aws_iam
+  artists-createIndexes:
+    handler: api/artists/create.indexes
+    events:
+      - http:
+          path: artists
+          method: post
+          cors: true
+          authorizer: aws_iam
+  artists-getAll:
+    handler: api/artists/get.all
+    events:
+      - http:
+          path: artists
+          method: get
+          cors: true
+          authorizer: aws_iam
+  artists-getAllNames:
+    handler: api/artists/get.indexes
+    events:
+      - http:
+          path: artists
+          method: get
+          cors: true
+          authorizer: aws_iam
+  artists-get:
+    handler: api/artists/get.main
+    events:
+      - http:
+          path: artists/{name}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  artists-update:
+    handler: api/artists/update.main
+    events:
+      - http:
+          path: artists/{name}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  artists-delete:
+    handler: api/artists/delete.main
+    events:
+      - http:
+          path: artists/{name}
+          method: delete
           cors: true
           authorizer: aws_iam

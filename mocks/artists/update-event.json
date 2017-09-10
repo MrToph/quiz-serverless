@@ -1,0 +1,11 @@
+{
+    "body": "{\"url\":\"https://genius.com/artists/Logic_updated\"}",
+    "pathParameters": {
+        "name": "Logic"
+    },
+    "requestContext": {
+        "identity": {
+            "cognitoIdentityId": "USER-SUB-1234"
+        }
+    }
+}

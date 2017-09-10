@@ -1,6 +1,7 @@
 var glob = require("glob");
 var path = require("path");
 var nodeExternals = require("webpack-node-externals");
+const slsw = require("serverless-webpack");
 
 // Required for Create React App Babel transform
 process.env.NODE_ENV = "production";
@@ -8,7 +9,9 @@ process.env.NODE_ENV = "production";
 module.exports = {
   // Use all js files in project root (except
   // the webpack config) as an entry
-  entry: globEntries("!(webpack.config).js"),
+  // entry: globEntries("api/**/*.js"),
+  // serverless-webpack handles file finding automatically
+  entry: slsw.lib.entries,
   target: "node",
   // Since 'aws-sdk' is not compatible with webpack,
   // we exclude all node dependencies
@@ -39,7 +42,9 @@ function globEntries(globPath) {
 
   for (var i = 0; i < files.length; i++) {
     var entry = files[i];
-    entries[path.basename(entry, path.extname(entry))] = "./" + entry;
+    const subDirectory = path.dirname(entry).split("/").pop();
+    entries[subDirectory + "/" + path.basename(entry, path.extname(entry))] =
+      "./" + entry;
   }
 
   return entries;

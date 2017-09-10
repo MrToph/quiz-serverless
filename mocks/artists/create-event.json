@@ -1,0 +1,8 @@
+{
+    "body": "{\"name\":\"Logic\",\"url\":\"https://genius.com/artists/Logic\"}",
+    "requestContext": {
+        "identity": {
+            "cognitoIdentityId": "USER-SUB-1234"
+        }
+    }
+}
