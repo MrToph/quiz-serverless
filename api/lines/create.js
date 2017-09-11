@@ -1,46 +1,18 @@
 import uuidv4 from "uuid/v4";
+import { createLine } from "../../libs/lines";
 import * as dynamoDbLib from "../../libs/dynamodb-lib";
 import { success, failure } from "../../libs/response-lib";
 
 export async function main(event, context, callback) {
-  const data = JSON.parse(event.body);
-  const params = {
-    TableName: "rapquiz.artists",
-    Item: {
-      name: data.name,
-      url: data.url,
-      createdAt: new Date().getTime()
-    }
-  };
-
   try {
+    const line = createLine(JSON.parse(event.body));
+    const params = {
+      TableName: "rapquiz.lines",
+      Item: line
+    };
+
     const result = await dynamoDbLib.call("put", params);
     callback(null, success(params.Item));
-  } catch (e) {
-    console.log(e);
-    callback(null, failure({ status: false }));
-  }
-}
-
-export async function random(event, context, callback) {
-  const params = {
-    TableName: "rapquiz.artists",
-    Item: {
-      name: "",
-      url: "",
-      createdAt: new Date().getTime()
-    }
-  };
-
-  try {
-    for (let i = 0; i < 990; i++) {
-      const key = uuidv4();
-      console.log("Updated ", i, key);
-      params.Item.name = key;
-      params.Item.url = `https://${uuidv4()}.com`;
-      await dynamoDbLib.call("put", params);
-    }
-    callback(null, success({ status: true }));
   } catch (e) {
     console.log(e);
     callback(null, failure({ status: false }));
@@ -50,31 +22,31 @@ export async function random(event, context, callback) {
 export async function indexes(event, context, callback) {
   try {
     let { Item } = await dynamoDbLib.call("get", {
-      TableName: "rapquiz.artists",
+      TableName: "rapquiz.lines",
       Key: {
-        name: "indexes"
+        id: "indexes"
       }
     });
     const indexesExist = !!Item;
 
     const result = await dynamoDbLib.call("scan", {
-      TableName: "rapquiz.artists",
-      FilterExpression: "#name <> :indexes",
-      ProjectionExpression: "#name",
+      TableName: "rapquiz.lines",
+      FilterExpression: "#id <> :indexes",
+      ProjectionExpression: "#id",
       ExpressionAttributeNames: {
-        "#name": "name"
+        "#id": "id"
       },
       ExpressionAttributeValues: {
         ":indexes": "indexes"
       }
     });
     if (result.Items) {
-      const keys = result.Items.map(item => item.name);
+      const keys = result.Items.map(item => item.id);
       if (indexesExist) {
         const result = dynamoDbLib.call("update", {
-          TableName: "rapquiz.artists",
+          TableName: "rapquiz.lines",
           Key: {
-            name: "indexes"
+            id: "indexes"
           },
           UpdateExpression: "SET #keys = :keys",
           ExpressionAttributeNames: {
@@ -88,9 +60,9 @@ export async function indexes(event, context, callback) {
         return void callback(null, success({ result }));
       } else {
         const result = await dynamoDbLib.call("put", {
-          TableName: "rapquiz.artists",
+          TableName: "rapquiz.lines",
           Item: {
-            name: "indexes",
+            id: "indexes",
             keys
           }
         });

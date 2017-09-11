@@ -4,9 +4,9 @@ import { success, failure } from "../../libs/response-lib";
 export async function main(event, context, callback) {
   const data = JSON.parse(event.body);
   const params = {
-    TableName: "rapquiz.artists",
+    TableName: "rapquiz.lines",
     Key: {
-      name: event.pathParameters.name
+      id: event.pathParameters.id
     },
     ...dynamoDbLib.createUpdateExpression(data),
     ReturnValues: "ALL_NEW"

@@ -8,19 +8,19 @@
 
 ### Artists
 * Create: `serverless webpack invoke --function artists-create --path mocks/artists/create-event.json`
+* Build Index: `serverless webpack invoke --function artists-createIndexes`
 * Get One: `serverless webpack invoke --function artists-get --path mocks/artists/get-event.json`
 * Get All: `serverless webpack invoke --function artists-getAll`
 * Update: `serverless webpack invoke --function artists-update --path mocks/artists/update-event.json`
 * Delete: `serverless webpack invoke --function artists-delete --path mocks/artists/delete-event.json`
-* Build Index: `serverless webpack invoke --function artists-createIndexes`
 
 ### Lines
-* Create: `serverless webpack invoke --function artists-create --path mocks/artists/create-event.json`
-* Get One: `serverless webpack invoke --function artists-get --path mocks/artists/get-event.json`
-* Get All: `serverless webpack invoke --function artists-getAll`
-* Update: `serverless webpack invoke --function artists-update --path mocks/artists/update-event.json`
-* Delete: `serverless webpack invoke --function artists-delete --path mocks/artists/delete-event.json`
-* Build Index: `serverless webpack invoke --function artists-createIndexes`
+* Create: `serverless webpack invoke --function lines-create --path mocks/lines/create-event.json`
+* Build Index: `serverless webpack invoke --function lines-createIndexes`
+* Get One: `serverless webpack invoke --function lines-get --path mocks/lines/get-event.json`
+* Get All: `serverless webpack invoke --function lines-getAll`
+* Update: `serverless webpack invoke --function lines-update --path mocks/lines/update-event.json`
+* Delete: `serverless webpack invoke --function lines-delete --path mocks/lines/delete-event.json`
 
 
 ### Data Model

@@ -59,7 +59,7 @@ functions:
           method: get
           cors: true
           authorizer: aws_iam
-  artists-getAllNames:
+  artists-getNames:
     handler: api/artists/get.indexes
     events:
       - http:
@@ -88,6 +88,63 @@ functions:
     events:
       - http:
           path: artists/{name}
+          method: delete
+          cors: true
+          authorizer: aws_iam
+
+  lines-create:
+    handler: api/lines/create.main
+    events:
+      - http:
+          path: lines
+          method: post
+          cors: true
+          authorizer: aws_iam
+  lines-createIndexes:
+    handler: api/lines/create.indexes
+    events:
+      - http:
+          path: lines
+          method: post
+          cors: true
+          authorizer: aws_iam
+  lines-getAll:
+    handler: api/lines/get.all
+    events:
+      - http:
+          path: lines
+          method: get
+          cors: true
+          authorizer: aws_iam
+  lines-getIds:
+    handler: api/lines/get.indexes
+    events:
+      - http:
+          path: lines
+          method: get
+          cors: true
+          authorizer: aws_iam
+  lines-get:
+    handler: api/lines/get.main
+    events:
+      - http:
+          path: lines/{id}
+          method: get
+          cors: true
+          authorizer: aws_iam
+  lines-update:
+    handler: api/lines/update.main
+    events:
+      - http:
+          path: lines/{id}
+          method: put
+          cors: true
+          authorizer: aws_iam
+  lines-delete:
+    handler: api/lines/delete.main
+    events:
+      - http:
+          path: lines/{id}
           method: delete
           cors: true
           authorizer: aws_iam

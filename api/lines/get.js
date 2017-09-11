@@ -3,9 +3,9 @@ import { success, failure } from "../../libs/response-lib";
 
 export async function main(event, context, callback) {
   const params = {
-    TableName: "rapquiz.artists",
+    TableName: "rapquiz.lines",
     Key: {
-      name: event.pathParameters.name
+      id: event.pathParameters.id
     }
   };
 
@@ -24,10 +24,10 @@ export async function main(event, context, callback) {
 
 export async function all(event, context, callback) {
   const params = {
-    TableName: "rapquiz.artists",
-    FilterExpression: "#name <> :indexes",
+    TableName: "rapquiz.lines",
+    FilterExpression: "#id <> :indexes",
     ExpressionAttributeNames: {
-      "#name": "name"
+      "#id": "id"
     },
     ExpressionAttributeValues: {
       ":indexes": "indexes"
@@ -40,7 +40,7 @@ export async function all(event, context, callback) {
     if (result.Items) {
       callback(null, success(result.Items));
     } else {
-      callback(null, failure({ status: false, error: "No items not found." }));
+      callback(null, failure({ status: false, error: "No items found." }));
     }
   } catch (e) {
     console.log(e);
@@ -50,9 +50,9 @@ export async function all(event, context, callback) {
 
 export async function indexes(event, context, callback) {
   const params = {
-    TableName: "rapquiz.artists",
+    TableName: "rapquiz.lines",
     Key: {
-      name: "indexes"
+      id: "indexes"
     },
     ProjectionExpression: "#keys",
     ExpressionAttributeNames: {
