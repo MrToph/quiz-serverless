@@ -6,7 +6,12 @@ export async function main(event, context, callback) {
     TableName: "rapquiz.artists",
     Key: {
       name: event.pathParameters.name
-    }
+    },
+    ExpressionAttributeNames: {
+      "#name": "name",
+      "#url": "url"
+    },
+    ProjectionExpression: "#name, #url"
   };
 
   try {
@@ -27,11 +32,13 @@ export async function all(event, context, callback) {
     TableName: "rapquiz.artists",
     FilterExpression: "#name <> :indexes",
     ExpressionAttributeNames: {
-      "#name": "name"
+      "#name": "name",
+      "#url": "url"
     },
     ExpressionAttributeValues: {
       ":indexes": "indexes"
     },
+    ProjectionExpression: "#name, #url",
     ReturnConsumedCapacity: "TOTAL"
   };
 

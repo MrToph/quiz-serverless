@@ -1,11 +1,11 @@
 import uuidv4 from "uuid/v4";
-import { createLine } from "../../libs/lines";
+import { createLine, untransformLine } from "../../libs/lines";
 import * as dynamoDbLib from "../../libs/dynamodb-lib";
 import { success, failure } from "../../libs/response-lib";
 
 export async function main(event, context, callback) {
   try {
-    const line = createLine(JSON.parse(event.body));
+    const line = untransformLine(createLine(JSON.parse(event.body)));
     const params = {
       TableName: "rapquiz.lines",
       Item: line

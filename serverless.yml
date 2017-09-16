@@ -39,7 +39,7 @@ functions:
     handler: api/artists/create.random
     events:
       - http:
-          path: artists
+          path: artists/random
           method: post
           cors: true
           authorizer: aws_iam
@@ -47,7 +47,7 @@ functions:
     handler: api/artists/create.indexes
     events:
       - http:
-          path: artists
+          path: artists/indexes
           method: post
           cors: true
           authorizer: aws_iam
@@ -63,7 +63,7 @@ functions:
     handler: api/artists/get.indexes
     events:
       - http:
-          path: artists
+          path: artists-names
           method: get
           cors: true
           authorizer: aws_iam
@@ -104,7 +104,7 @@ functions:
     handler: api/lines/create.indexes
     events:
       - http:
-          path: lines
+          path: lines/indexes
           method: post
           cors: true
           authorizer: aws_iam
@@ -112,15 +112,15 @@ functions:
     handler: api/lines/get.all
     events:
       - http:
-          path: lines
           method: get
+          path: lines
           cors: true
           authorizer: aws_iam
   lines-getIds:
     handler: api/lines/get.indexes
     events:
       - http:
-          path: lines
+          path: lines/indexes
           method: get
           cors: true
           authorizer: aws_iam
