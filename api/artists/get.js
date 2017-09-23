@@ -70,7 +70,6 @@ export async function indexes(event, context, callback) {
 
   try {
     const result = await dynamoDbLib.call("get", params);
-    console.log(result.ConsumedCapacity);
     if (result.Item) {
       callback(null, success(result.Item));
     } else {

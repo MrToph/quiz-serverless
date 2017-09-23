@@ -14,9 +14,7 @@ export async function main(event, context, callback) {
   };
 
   try {
-    console.log('calling artists.main with ', JSON.stringify(params));
     const result = await dynamoDbLib.call("put", params);
-    console.log('Result ', JSON.stringify(result))
     callback(null, success(params.Item));
   } catch (e) {
     console.log(e);

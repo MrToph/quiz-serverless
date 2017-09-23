@@ -19,6 +19,35 @@ export async function main(event, context, callback) {
   }
 }
 
+export async function random(event, context, callback) {
+  const params = {
+    TableName: "rapquiz.lines",
+    Item: {
+      language: "de",
+      artist: "Logic"
+    }
+  };
+
+  try {
+    for (let i = 0; i < 100; i++) {
+      const id = uuidv4();
+      console.log("Created ", i, id);
+      params.Item.id = id;
+      params.Item.text = Math.random().toString(36);
+      params.Item.album = Math.random().toString(36).split(".").pop();
+      params.Item.songTitle = Math.random().toString(36).split(".").pop();
+      params.Item.moreUrl = `https://${uuidv4()}.com`;
+      params.Item.active = !!(i % 2);
+      params.Item = untransformLine(createLine(params.Item));
+      await dynamoDbLib.call("put", params);
+    }
+    callback(null, success({ status: true }));
+  } catch (e) {
+    console.log(e);
+    callback(null, failure({ status: false }));
+  }
+}
+
 export async function indexes(event, context, callback) {
   try {
     let { Item } = await dynamoDbLib.call("get", {

@@ -100,6 +100,14 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+  lines-createRandom:
+    handler: api/lines/create.random
+    events:
+      - http:
+          path: lines/random
+          method: post
+          cors: true
+          authorizer: aws_iam
   lines-createIndexes:
     handler: api/lines/create.indexes
     events:
@@ -146,5 +154,13 @@ functions:
       - http:
           path: lines/{id}
           method: delete
+          cors: true
+          authorizer: aws_iam
+  lines-judge:
+    handler: api/lines/judge.main
+    events:
+      - http:
+          path: judgeLine/{id}
+          method: post
           cors: true
           authorizer: aws_iam

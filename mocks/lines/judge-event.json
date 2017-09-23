@@ -1,0 +1,6 @@
+{
+    "body": "{\"acceptLine\":\"true\"}",
+    "pathParameters": {
+        "id": "some-random-id"
+    }
+}

@@ -23,9 +23,9 @@ export async function main(event, context, callback) {
 }
 
 export async function all(event, context, callback) {
+  const linesPerRequest = 30;
   try {
     const { lineStatus, fromId } = event.queryStringParameters;
-    console.log(lineStatus);
     const lineStatusString = lineStatus === "true" ? "y" : "n";
     const params = {
       TableName: "rapquiz.lines",
@@ -40,12 +40,14 @@ export async function all(event, context, callback) {
         ":indexes": "indexes",
         ":lineStatus": lineStatusString
       },
+      Limit: linesPerRequest,
       ReturnConsumedCapacity: "TOTAL"
-      // ExclusiveStartKey: fromId, // result.LastEvaluatedKey
     };
+    if (fromId) params.ExclusiveStartKey = JSON.parse(fromId); // result.LastEvaluatedKey
     const result = await dynamoDbLib.call("query", params);
     if (result.Items) {
-      callback(null, success(result.Items.map(item => transformLine(item))));
+      result.Items = result.Items.map(item => transformLine(item));
+      callback(null, success(result));
     } else {
       callback(null, failure({ status: false, error: "No items found." }));
     }
@@ -70,7 +72,6 @@ export async function indexes(event, context, callback) {
 
   try {
     const result = await dynamoDbLib.call("get", params);
-    console.log(result.ConsumedCapacity);
     if (result.Item) {
       callback(null, success(result.Item));
     } else {
