@@ -21,6 +21,7 @@ provider:
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
+        - dynamodb:BatchGetItem
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
@@ -164,3 +165,30 @@ functions:
           method: post
           cors: true
           authorizer: aws_iam
+
+  scrape-popular:
+    handler: api/lines/scrape.popular
+    timeout: 300
+    events:
+      - http:
+          path: scrape/popular
+          method: post
+          cors: true
+          authorizer: aws_iam
+  scrape-date:
+    handler: api/lines/scrape.date
+    timeout: 300
+    events:
+      - http:
+          path: scrape/date
+          method: post
+          cors: true
+          authorizer: aws_iam
+  
+  game-lines:
+    handler: api/public/game.main
+    events:
+      - http:
+          path: game/lines
+          method: get
+          cors: true

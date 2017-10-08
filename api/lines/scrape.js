@@ -1,49 +1,31 @@
 import moment from "moment";
 import genius from "../../libs/genius/api";
+import * as dynamoDbLib from "../../libs/dynamodb-lib";
+import { success, failure } from "../../libs/response-lib";
+import { createLine, transformLine, untransformLine } from "../../libs/lines";
 
-routes.get(
-  "/scrape/fillWithTestLines",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    for (let i = 0; i < 250; i += 1) {
-      const newLine = new Line({
-        text: `Sample Text ${i}`,
-        artist: "KIZ",
-        songTitle: "Sample Song",
-        language: "de",
-        moreUrl: `http://kiz.com/${i}`,
-        active: false
-      });
-
-      newLine.save(err => {
-        if (err) {
-          res.status(400).json(createError(`Database error: ${err}`));
-        }
-      });
-    }
-    res.json({});
-  }
-);
-
-function storeLineInDB(line) {
+async function storeLineInDB(line) {
   const { text, url, artist, title, album, thumbnail } = line;
   console.log(line);
-  const newLine = new Line({
-    text,
-    artist,
-    songTitle: title,
-    album,
-    thumbnail,
-    language: "de", // TODO: get this from artist?
-    moreUrl: url,
-    active: false
-  });
+  const newLine = untransformLine(
+    createLine({
+      text,
+      artist,
+      songTitle: title,
+      album,
+      thumbnail,
+      language: "de", // TODO: get this from artist?
+      moreUrl: url,
+      active: false
+    })
+  );
 
-  newLine.save(err => {
-    if (err) {
-      console.error(createError(`Database error: ${err}`));
-    }
-  });
+  const params = {
+    TableName: "rapquiz.lines",
+    Item: newLine
+  };
+
+  return await dynamoDbLib.call("put", params);
 }
 
 function scrapeSong(song, artistName) {
@@ -66,20 +48,13 @@ function scrapeSong(song, artistName) {
     .catch(err => console.log("scrapeSong - Error", err));
 }
 
-routes.post(
-  "/scrape/popular",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    const { artistNames, numberOfSongsToParse } = req.body;
+export async function popular(event, context, callback) {
+  try {
+    const { artistNames, numberOfSongsToParse } = JSON.parse(event.body);
     if (!artistNames || !numberOfSongsToParse) {
-      res
-        .status(400)
-        .json(
-          createError(
-            'Please pass both "artistNames" and "numberOfSongsToParse".'
-          )
-        );
-      return;
+      throw new Error(
+        'Please pass both "artistNames" and "numberOfSongsToParse".'
+      );
     }
 
     console.log(
@@ -102,33 +77,29 @@ routes.post(
         .catch(err => res.status(400).json(createError(err)));
     }
 
-    res.json({});
+    // const result = await dynamoDbLib.call("update", params);
+    // immediately return for now
+    callback(null, success({ status: true }));
+  } catch (e) {
+    console.log(e);
+    callback(null, failure({ status: false, error: JSON.stringify(e) }));
   }
-);
+}
 
-routes.post(
-  "/scrape/date",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    const { artistNames, timestampToParseFrom } = req.body;
+export async function date(event, context, callback) {
+  try {
+    const { artistNames, timestampToParseFrom } = JSON.parse(event.body);
     if (!artistNames || !timestampToParseFrom) {
-      res
-        .status(400)
-        .json(
-          createError(
-            'Please pass both "artistNames" and "timestampToParseFrom".'
-          )
-        );
-      return;
+      throw new Error(
+        'Please pass both "artistNames" and "timestampToParseFrom".'
+      );
     }
+
     const sinceDate = moment(timestampToParseFrom);
     if (!sinceDate.isValid()) {
-      res
-        .status(400)
-        .json(
-          createError('Please pass a _valid_ "timestampToParseFrom" parameter.')
-        );
-      return;
+      throw new Error(
+        'Please pass a _valid_ "timestampToParseFrom" parameter.'
+      );
     }
 
     console.log("/scrape/date", artistNames, artistNames.length, sinceDate);
@@ -144,8 +115,11 @@ routes.post(
         .catch(err => res.status(400).json(createError(err)));
     }
 
-    res.json({});
+    // const result = await dynamoDbLib.call("update", params);
+    // immediately return for now
+    callback(null, success({ status: true }));
+  } catch (e) {
+    console.log(e);
+    callback(null, failure({ status: false, error: JSON.stringify(e) }));
   }
-);
-
-export default routes;
+}
