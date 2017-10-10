@@ -20,7 +20,6 @@ async function getArtistNames() {
   };
 
   const result = await dynamoDbLib.call("scan", params);
-  console.log(result.ConsumedCapacity);
   if (result.Items) {
     return result.Items.map(({ name }) => name);
   } else {
@@ -42,7 +41,6 @@ async function getRandomLines() {
   };
 
   let result = await dynamoDbLib.call("get", params);
-  console.log(result.ConsumedCapacity);
   if (!result.Item) {
     throw new Error(`Could not get ids for lines.\n${JSON.stringify(result)}`);
   }
@@ -63,7 +61,6 @@ async function getRandomLines() {
       `Could not batch get random line ids.\n${JSON.stringify(result)}`
     );
   }
-  console.log(result.ConsumedCapacity);
   return result.Responses["rapquiz.lines"];
 }
 
@@ -89,10 +86,13 @@ function getPossibleAnswers(allArtistNames, correctArtistName) {
 }
 
 function createQuizData(lines, artistNames) {
-  return lines.map(line => ({
-    ...line,
-    ...getPossibleAnswers(artistNames, line.artist)
-  }));
+  return lines.map(line => {
+    line.text = line.text.split("\n").map(row => row.trim()).join("\n");
+    return {
+      ...line,
+      ...getPossibleAnswers(artistNames, line.artist)
+    };
+  });
 }
 
 export async function main(event, context, callback) {
@@ -100,7 +100,6 @@ export async function main(event, context, callback) {
     const artistNames = await getArtistNames();
     const lines = await getRandomLines();
     const quiz = createQuizData(lines, artistNames);
-    console.log("quiz", quiz);
     callback(null, success(quiz));
   } catch (e) {
     console.log(e);

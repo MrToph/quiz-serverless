@@ -1,4 +1,4 @@
-service: notes-app-api
+service: rapquiz-app-api
 
 plugins:
   - serverless-webpack
