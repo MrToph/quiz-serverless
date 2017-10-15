@@ -4,7 +4,9 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "backup": "node scripts/backup.js",
+    "restore": "node scripts/restore.js"
   },
   "keywords": [],
   "author": "",
@@ -24,10 +26,11 @@
   "dependencies": {
     "babel-runtime": "^6.26.0",
     "cheerio": "^1.0.0-rc.2",
+    "dynamo-backup-to-s3": "^0.6.1",
     "genius-api": "^0.4.1",
     "glob": "^7.1.2",
     "lodash": "^4.17.4",
-    "moment": "^2.18.1",
+    "moment": "^2.19.1",
     "node-fetch": "^1.7.3"
   }
 }
