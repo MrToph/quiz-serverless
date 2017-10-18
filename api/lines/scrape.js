@@ -28,7 +28,7 @@ async function storeLineInDB(line) {
   return await dynamoDbLib.call("put", params);
 }
 
-function scrapeSong(song, artistName) {
+async function scrapeSong(song, artistName) {
   console.log(`Scraping song ${artistName} - ${song.title}`);
   genius
     .getSongReferents(song, artistName)
@@ -43,7 +43,11 @@ function scrapeSong(song, artistName) {
       return genius.getRandomSongLines(song, artistName);
     })
     .then(lines => {
-      lines.map(storeLineInDB);
+      try{
+        lines.map(storeLineInDB);
+      } catch (err) {
+        console.log("storeLineInDb - Error", err)
+      }
     })
     .catch(err => console.log("scrapeSong - Error", err));
 }
@@ -60,21 +64,25 @@ export async function popular(event, context, callback) {
     console.log(
       "/scrape/popular",
       artistNames,
-      artistNames.length,
       numberOfSongsToParse
     );
 
     for (let i = 0; i < artistNames.length; i += 1) {
       const artist = artistNames[i];
-      genius
-        .getArtistIdByName(artist)
-        .then(({ artistId }) =>
-          genius.getSongsByPopularity(artistId, numberOfSongsToParse)
-        )
-        .then(songs => {
-          songs.forEach(song => setTimeout(() => scrapeSong(song, artist), 0));
-        })
-        .catch(err => res.status(400).json(createError(err)));
+      try {
+        await genius
+          .getArtistIdByName(artist)
+          .then(({ artistId }) => {
+            console.log(`Found artist ${artist} with id ${artistId}`)
+            return genius.getSongsByPopularity(artistId, numberOfSongsToParse)
+          })
+          .then(songs => {
+            songs.forEach(song => setTimeout(() => scrapeSong(song, artist), 0));
+          })
+      } catch (err) {
+        console.log('popular - Error', err.message);
+        callback(null, failure({ status: false, error: err.message }));
+      }
     }
 
     // const result = await dynamoDbLib.call("update", params);
@@ -112,7 +120,7 @@ export async function date(event, context, callback) {
         .then(songs => {
           songs.forEach(song => setTimeout(() => scrapeSong(song, artist), 0)); // TODO: we don't need to query genius again here
         })
-        .catch(err => res.status(400).json(createError(err)));
+        .catch(err => console.log("date - Error", JSON.stringify(err)));
     }
 
     // const result = await dynamoDbLib.call("update", params);

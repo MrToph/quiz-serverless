@@ -8,13 +8,13 @@ var DynamoRestore = require('dynamo-backup-to-s3').Restore;
 const jobs = [
     {
         // This file may not have a backslash in it!
-        source: 's3://rapquiz-backups/rapquiz.artists.json',
+        source: 's3://rapquiz-backups/some-data-rapquiz.artists.json',
         table: 'rapquiz.artists',
         partitionkey: 'name',
     },
     {
         // This file may not have a backslash in it!
-        source: 's3://rapquiz-backups/rapquiz.lines.json',
+        source: 's3://rapquiz-backups/some-data-rapquiz.lines.json',
         table: 'rapquiz.lines',
         partitionkey: 'id',
     }

@@ -41,6 +41,7 @@ Genius.prototype.getArtistInfoByName = function getArtistInfoByName(
           return hit.result;
         }
       }
+
       throw new Error(
         `Did not find any songs whose artist is "${artistNameNormalized}".`
       );
