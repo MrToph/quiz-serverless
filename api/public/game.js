@@ -45,6 +45,7 @@ async function getRandomLines() {
     throw new Error(`Could not get ids for lines.\n${JSON.stringify(result)}`);
   }
   const ids = result.Item.keys;
+  // console.log(result);
   const randomIds = sampleSize(ids, numberOfLines);
 
   params = {
@@ -56,6 +57,8 @@ async function getRandomLines() {
     ReturnConsumedCapacity: "TOTAL"
   };
   result = await dynamoDbLib.call("batchGet", params);
+  // console.log(result.ConsumedCapacity);
+
   if (!result.Responses || !result.Responses["rapquiz.lines"]) {
     throw new Error(
       `Could not batch get random line ids.\n${JSON.stringify(result)}`

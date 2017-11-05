@@ -29,11 +29,12 @@ Genius.prototype.getArtistInfoByName = function getArtistInfoByName(
 ) {
   const normalizeName = name => name.replace(/\./g, "").toLowerCase();
   const artistNameNormalized = normalizeName(artistName);
-  return this.search(artistName)
+  return this.search(`${artistName}`)
     .then(handleErrors)
     .then(response => {
       for (let i = 0; i < response.hits.length; i += 1) {
         const hit = response.hits[i];
+        // console.log(hit.result.primary_artist.name);
         if (
           hit.type === "song" &&
           normalizeName(hit.result.primary_artist.name) === artistNameNormalized

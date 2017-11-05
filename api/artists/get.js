@@ -2,10 +2,11 @@ import * as dynamoDbLib from "../../libs/dynamodb-lib";
 import { success, failure } from "../../libs/response-lib";
 
 export async function main(event, context, callback) {
+  const name = decodeURI(event.pathParameters.name);
   const params = {
     TableName: "rapquiz.artists",
     Key: {
-      name: event.pathParameters.name
+      name,
     },
     ExpressionAttributeNames: {
       "#name": "name",

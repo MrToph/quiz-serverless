@@ -7,7 +7,7 @@ var DynamoBackup = require('dynamo-backup-to-s3');
 
 var backup = new DynamoBackup({
     includedTables: ['rapquiz.artists', 'rapquiz.lines'],
-    readPercentage: .5,
+    readPercentage: 5,
     bucket: 'rapquiz-backups',
     stopOnFailure: true,
     base64Binary: true,

@@ -49,6 +49,36 @@ export async function random(event, context, callback) {
 }
 
 export async function indexes(event, context, callback) {
+  async function getItemIds() {
+    let keys = [];
+    let lastEvaluatedKeyParams = {};
+    do {
+      const result = await dynamoDbLib.call("scan", {
+        TableName: "rapquiz.lines",
+        FilterExpression: "#id <> :indexes",
+        ProjectionExpression: "#id",
+        ExpressionAttributeNames: {
+          "#id": "id"
+        },
+        ExpressionAttributeValues: {
+          ":indexes": "indexes"
+        },
+        ...lastEvaluatedKeyParams,
+      });
+
+      if (result.LastEvaluatedKey) {
+        lastEvaluatedKeyParams = {
+          ExclusiveStartKey: result.LastEvaluatedKey
+        };
+      } else {
+        lastEvaluatedKeyParams = {};
+      }
+      if (!result.Items) throw new Error("No more items present");
+      keys = keys.concat(result.Items.map(item => item.id));
+    } while (Object.keys(lastEvaluatedKeyParams).length > 0);
+    return keys;
+  }
+
   try {
     let { Item } = await dynamoDbLib.call("get", {
       TableName: "rapquiz.lines",
@@ -58,6 +88,7 @@ export async function indexes(event, context, callback) {
     });
     const indexesExist = !!Item;
 
+    const keys = await getItemIds();
     const result = await dynamoDbLib.call("scan", {
       TableName: "rapquiz.lines",
       FilterExpression: "#id <> :indexes",
@@ -69,39 +100,32 @@ export async function indexes(event, context, callback) {
         ":indexes": "indexes"
       }
     });
-    if (result.Items) {
-      const keys = result.Items.map(item => item.id);
-      if (indexesExist) {
-        const result = dynamoDbLib.call("update", {
-          TableName: "rapquiz.lines",
-          Key: {
-            id: "indexes"
-          },
-          UpdateExpression: "SET #keys = :keys",
-          ExpressionAttributeNames: {
-            "#keys": "keys"
-          },
-          ExpressionAttributeValues: {
-            ":keys": keys
-          },
-          ReturnValues: "ALL_NEW"
-        });
-        return void callback(null, success({ result }));
-      } else {
-        const result = await dynamoDbLib.call("put", {
-          TableName: "rapquiz.lines",
-          Item: {
-            id: "indexes",
-            keys
-          }
-        });
-        return void callback(null, success({ result }));
-      }
+    console.log(`lines.create.indexes: Found ${keys.length} lines`);
+    if (indexesExist) {
+      const result = dynamoDbLib.call("update", {
+        TableName: "rapquiz.lines",
+        Key: {
+          id: "indexes"
+        },
+        UpdateExpression: "SET #keys = :keys",
+        ExpressionAttributeNames: {
+          "#keys": "keys"
+        },
+        ExpressionAttributeValues: {
+          ":keys": keys
+        },
+        ReturnValues: "ALL_NEW"
+      });
+      return void callback(null, success({ result }));
     } else {
-      return void callback(
-        null,
-        failure({ status: false, error: "No items found." })
-      );
+      const result = await dynamoDbLib.call("put", {
+        TableName: "rapquiz.lines",
+        Item: {
+          id: "indexes",
+          keys
+        }
+      });
+      return void callback(null, success({ result }));
     }
   } catch (e) {
     console.log(e);
